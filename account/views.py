@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.views import View
-from .models import User
+from .models import *
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.views.generic import ListView
 # Create your views here.
 class AccountSignupApiView(View):
     def get(self, request):
@@ -83,12 +84,79 @@ class PatinentHomeApiView(View):
         try:
             user = request.user
             if user.user_type=="PATIENT":
-                return render(request, "doctor-home.html", {"user": user})
+                return render(request, "patient-home.html", {"user": user})
             return redirect("Doctor-home")
         except:
             return redirect("account-login")
         return render(request, "doctor-home", {"user": user})
+
 def handlelogout(request):
     logout(request)
     messages.success(request,"Successfuly Logged  out" )
     return redirect('account-login')
+
+@method_decorator(login_required(login_url='/login'), name='dispatch')
+class CreateBlogApiView(View):
+    def get(self, request):
+        try:
+            user=request.user
+            if user.user_type=="DOCTOR":
+                return render(request, "doctor-blog.html")
+        except:
+            messages.error(request, {"User is Not Doctor"})
+            return redirect("account-login")
+        return redirect("account-login")
+
+    def post(self, request):
+        user=request.user
+        try:
+            user1=User.objects.get(email=request.user.email)
+            title = request.POST['title']
+            content = request.POST['content']
+            image = request.FILES.get('image', "")
+            summary = request.POST['summary']
+            catergory = request.POST['catergory']
+            blog =Blog(title=title, content=content, image=image, summary=summary, category=catergory, user=user1)
+            blog.save()
+            return redirect("Doctor-home")
+        except:
+            return render(request, "doctor-blog.html")
+        return render(request, "doctor-blog.html")
+
+@method_decorator(login_required(login_url='/login'), name='dispatch')
+class ShowBlogApiView(ListView):
+    model = Blog
+    template_name = "list-blog.html"
+    def get(self, request):
+        user=request.user
+        if user.user_type=="PATIENT":
+            Blog=self.model.objects.all()
+            list=[]
+            for i in Blog:
+                summary=str(i.summary)
+                n = 15
+                s = summary
+                m=s[:n] + (s[n:], '...')[len(s) > n]
+                list.append(m)
+            try:
+                zipq=zip(Blog, list)
+                return render(request, self.template_name, {"object_list": zipq})
+            except:
+                return render(request, self.template_name)
+        else:
+            return redirect("account-login")
+
+@method_decorator(login_required(login_url='/login'), name='dispatch')
+class Draft(ListView):
+    model = Draft
+    template_name = "account/draf.html"
+
+    def get(self, request):
+        user = request.user
+        if user.user_type == "DOCTOR":
+            draft = self.model.objects.all()
+            return render(request, self.template_name, {"object_list":draft})
+        else:
+            return redirect("account-login")
+
+

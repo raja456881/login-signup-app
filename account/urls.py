@@ -8,4 +8,7 @@ urlpatterns = [
     path("", DoctorHomeApiView.as_view(), name="Doctor-home"),
     path("Patienthome", PatinentHomeApiView.as_view(), name="Patient-home" ),
     path("logout", handlelogout, name="logout"),
+    path("doctor-blog", CreateBlogApiView.as_view()),
+    path("list-blog", ShowBlogApiView.as_view()),
+    path("draft", Draft.as_view())
 ]
