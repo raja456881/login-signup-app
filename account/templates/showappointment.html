@@ -21,36 +21,35 @@
       <li class="nav-item active">
          <a class="nav-link" href='/list-blog'>Show all Blog <span class="sr-only">(current)</span></a>
          <a class="nav-link" href='/doctor-list'>Book Appointment <span class="sr-only">(current)</span></a>
-               <a class="nav-link" href='/showappointment'>Show Appointment <span class="sr-only">(current)</span></a>
+
         <a class="nav-link" href='/logout'>Logout <span class="sr-only">(current)</span></a>
       </li>
     </ul>
   </div>
 </nav>
+  <caption> User  Appointment Detail</caption>
   <table class="table caption-top">
-  <caption>Authication  User Detail</caption>
+
+      {% for i in object_list %}
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">First Name</th>
-      <th scope="col">Last Name</th>
-      <th scopr='col'> Username</th>
-      <th scope="col">Email</th>
-      <th scope="col">User Type</th>
+      <th scope="col">Doctor Name</th>
+      <th scope="col">Specialization</th>
+      <th scopr='col'>Start Time </th>
+      <th scope="col">End Time</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th scope="row">1</th>
-      <td>{{user.first_name}}</td>
-      <td>{{user.last_name}}</td>
-      <td>{{user.username}}</td>
-      <td>{{user.email}}</td>
-      <td>{{user.user_type}}</td>
+      <td>{{i.doctor}}</td>
+      <td>{{i.specialization}}</td>
+      <td>{{i.start_time}}</td>
+      <td>{{i.end_time}}</td>
     </tr>
    </td>
     </tr>
   </tbody>
+      {% endfor %}
 </table>
 
   <h1></h1>

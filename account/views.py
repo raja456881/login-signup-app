@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from django.views import View
 from .models import *
+
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView
+from.googlecalendarapi import main
+from datetime import datetime, timedelta
+import pytz
 # Create your views here.
 class AccountSignupApiView(View):
     def get(self, request):
@@ -158,5 +162,63 @@ class Draft(ListView):
             return render(request, self.template_name, {"object_list":draft})
         else:
             return redirect("account-login")
+@method_decorator(login_required(login_url='/login'), name='dispatch')
+class DoctorListApiView(ListView):
+    model = User
+    template_name = "doctordetails.py.html"
+
+    def get(self, request):
+        user = request.user
+        if user.user_type == "PATIENT":
+            draft = self.model.objects.all().filter(user_type="DOCTOR")
+            print(draft)
+            return render(request, self.template_name, {"object_list":draft})
+        else:
+            return redirect("account-login")
+@method_decorator(login_required(login_url='/login'), name='dispatch')
+class BookAppointmentApiView(View):
+    def get(self, request, id):
+        if request.user.user_type=="PATIENT":
+            return render(request, "account/appointment.html", {"id": id})
+        return redirect("account-login")
+
+    def post(self, request, id):
+        user=request.user
+        useremail=user.email
+        try:
+            doctor = User.objects.get(id=id)
+            required = request.POST['required']
+            date = request.POST['date']
+            main(doctor, useremail, required)
+            start_datetime = datetime.now(tz=pytz.utc)
+            starttime = start_datetime.isoformat()
+            endtime = (start_datetime + timedelta(minutes=45)).isoformat()
+            appointment = Appointment(start_time=start_datetime, end_time=endtime, specialization=required,
+                                      customer=user,
+                                      doctor=doctor)
+            appointment.save()
+            return render(request, "patient-home.html", {"user": user})
+        except:
+            return redirect("account-login")
+
+
+@method_decorator(login_required(login_url='/login'), name='dispatch')
+class ShowAppointmentApiView(ListView):
+    model = User
+    template_name = 'showappointment.html'
+
+    def get(self, request):
+        if request.user.user_type=="PATIENT":
+            try:
+                draft = self.model.objects.get(id=request.user.id)
+                data=draft.patient.all()
+            except User.DoesNotExit:
+                return redirect("account-login")
+        else:
+            return redirect("account-login")
+        return render(request, self.template_name, {"object_list": data})
+
+
+
 
 

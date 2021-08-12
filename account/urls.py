@@ -10,5 +10,10 @@ urlpatterns = [
     path("logout", handlelogout, name="logout"),
     path("doctor-blog", CreateBlogApiView.as_view()),
     path("list-blog", ShowBlogApiView.as_view()),
-    path("draft", Draft.as_view())
+    path("draft", Draft.as_view()),
+    path("doctor-list", DoctorListApiView.as_view()),
+    path("BookAppointment/<int:id>", BookAppointmentApiView.as_view()),
+    path("BookAppointment", BookAppointmentApiView.as_view()),
+    path("showappointment", ShowAppointmentApiView.as_view())
+
 ]

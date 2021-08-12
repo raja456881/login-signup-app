@@ -24,7 +24,7 @@
       <ul class="navbar-nav">
         <li class="nav-item active">
           <a class="nav-link" href='/list-blog'>Show all Blog <span class="sr-only">(current)</span></a>
-             <a class="nav-link" href='/doctor-list'>Book Appointment <span class="sr-only">(current)</span></a>
+
 
           <a class="nav-link" href='/logout'>Logout <span class="sr-only">(current)</span></a>
         </li>
@@ -36,24 +36,30 @@
 
 
 <div class="row my-2">
-     {% for blog,m in object_list %}
+
+     {% for blog in object_list %}
 
         <div class="col-md-6">
             <div
                 class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                 <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-primary">{{blog.content}}</strong>
-                    <h3 class="mb-0">{{blog.title}}</h3>
+                    <strong class="d-inline-block mb-2 text-primary"></strong>
+                    <h3 class="mb-0">{{blog.username}}</h3>
                     <div class="mb-1 text-muted"></div>
-                    <p class="card-text mb-auto">{{m}}</p>
+
+                    <form method="get" enctype="multipart/form-data" action="/BookAppointment/{{blog.id}}">
+                    <input type="hidden" value="{{blog.email}}">
+                        <input type="submit" value="Book Appointment" placeholder="Book Appointment">
+                        </form>
                 </div>
                 <div class="col-auto d-none d-lg-block">
-                    <img src="{{blog.image.url}}" class="bd-placeholder-img" width="200" height="250"
+                    <img src="{{blog.profilepicture.url}}" class="bd-placeholder-img" width="200" height="250"
                         aria-label="Placeholder: Thumbnail"/>
 
                 </div>
             </div>
         </div>
+
 {% if forloop.counter|divisibleby:2 %}
     </div><div class="row my-2">
     {% endif %}

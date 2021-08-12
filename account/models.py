@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models.signals import post_save,pre_save
 from django.dispatch import receiver
+from django.contrib.auth.models import UserManager
 # Create your models here.
 
 
@@ -33,7 +34,7 @@ class User(AbstractUser):
 
 class Blog(models.Model):
     title=models.CharField(max_length=100)
-    user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="blog")
+    user=models.ForeignKey(User, on_delete=models.CASCADE, related_name="blog", null=True)
     image=models.ImageField(upload_to="media/blog")
     category=models.CharField(max_length=30, choices=Catergory_Choices)
     summary=models.TextField(max_length=200)
@@ -46,6 +47,14 @@ class Draft(models.Model):
     category=models.CharField(max_length=30, choices=Catergory_Choices)
     summary=models.TextField(max_length=200)
     content=models.TextField(max_length=100)
+
+class Appointment(models.Model):
+    start_time = models.DateTimeField("start time")
+    end_time = models.DateTimeField('End time')
+    date = models.DateField(auto_now_add=True)
+    specialization = models.CharField('Specialization', max_length=50)
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="patient")
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE, related_name="doctor")
 
 
 @receiver(pre_save, sender=Blog)
