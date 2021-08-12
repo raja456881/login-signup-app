@@ -6,6 +6,7 @@ from datetime import datetime
 import pytz
 from datetime import timedelta
 def main(useremail=None , doctormail=None, required=None):
+    print(doctormail)
     SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 
     start_datetime = datetime.now(tz=pytz.utc)

@@ -189,7 +189,7 @@ class BookAppointmentApiView(View):
             doctor = User.objects.get(id=id)
             required = request.POST['required']
             date = request.POST['date']
-            main(doctor, useremail, required)
+            main(useremail,doctor, required)
             start_datetime = datetime.now(tz=pytz.utc)
             starttime = start_datetime.isoformat()
             endtime = (start_datetime + timedelta(minutes=45)).isoformat()
